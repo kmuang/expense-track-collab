@@ -3,81 +3,182 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Group Project | Expense Tracker</title> 
+  <title>Group Project | Expense Tracker</title>
   <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen p-6 flex items-center justify-center">
-  <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg">
-    <h1 class="text-2xl font-bold text-center mb-4 text-indigo-700">💸 Expense Tracker</h1>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-6">
 
-    <!-- Input Form -->
+  <!-- ───── LOGIN SCREEN ───── -->
+  <div id="loginScreen" class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
+    <h1 class="text-2xl font-bold text-center text-indigo-700 mb-1">💸 Expense Tracker</h1>
+    <p class="text-center text-gray-400 text-sm mb-6">Sign in to continue</p>
+
+    <div id="loginAlert" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4"></div>
+
     <div class="space-y-3">
-      <input id="item" type="text" placeholder="Expense name" class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
-      <input id="amount" type="number" placeholder="Amount" class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
-      <select id="category" class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
-        <option value="Food">Food</option>
-        <option value="Transport">Transport</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Utilities">Utilities</option>
-        <option value="Entertainment">Entertainment</option>
-        <option value="Other">Other</option>
-      </select>
-      <button id="add-btn" class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Add Expense</button>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com"
+          class="w-full border rounded px-3 py-2 text-sm focus:ring focus:ring-indigo-200 outline-none">
+        <p class="hidden text-xs text-red-500 mt-1" id="emailErr">Enter a valid email.</p>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Password</label>
+        <input id="loginPassword" type="password" placeholder="••••••••"
+          class="w-full border rounded px-3 py-2 text-sm focus:ring focus:ring-indigo-200 outline-none">
+        <p class="hidden text-xs text-red-500 mt-1" id="passErr">Must be at least 8 characters.</p>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-gray-400">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="rounded"> Remember me
+        </label>
+        <a href="#" class="text-indigo-500 hover:underline">Forgot password?</a>
+      </div>
+
+      <button id="loginBtn" onclick="handleLogin()"
+        class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 text-sm font-semibold transition">
+        Sign In
+      </button>
     </div>
 
-    <!-- Expense List -->
-    <div class="mt-6">
-      <h2 class="text-lg font-semibold mb-2">Expenses</h2>
-      <ul id="expense-list" class="space-y-2 text-sm text-gray-700"></ul>
-    </div>
+    <p class="text-center text-xs text-gray-400 mt-5">No account? <a href="#" class="text-indigo-500 hover:underline">Sign up</a></p>
+  </div>
 
-    <!-- Total -->
-    <div class="mt-4 border-t pt-3 text-right">
-      <span class="text-gray-500 text-sm">Total:</span>
-      <span id="total" class="text-xl font-bold text-indigo-700">$0.00</span>
-    </div>
+  <!-- ───── APP SCREEN ───── -->
+  <div id="appScreen" class="hidden w-full max-w-lg">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
 
-    <!-- Circle Chart -->
-    <div class="mt-8">
-      <h2 class="text-lg font-semibold mb-3 text-center">Spending Breakdown</h2>
-      <canvas id="expenseChart" width="400" height="400"></canvas>
+      <!-- Header with logout -->
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-indigo-700">💸 Expense Tracker</h1>
+        <div class="flex items-center gap-3">
+          <span id="userLabel" class="text-xs text-gray-400"></span>
+          <button onclick="handleLogout()" class="text-xs text-gray-400 hover:text-red-500 transition">Sign out</button>
+        </div>
+      </div>
+
+      <!-- Input Form -->
+      <div class="space-y-3">
+        <input id="item" type="text" placeholder="Expense name"
+          class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
+        <input id="amount" type="number" placeholder="Amount"
+          class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
+        <select id="category" class="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 outline-none">
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Other">Other</option>
+        </select>
+        <button id="add-btn" class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Add Expense</button>
+      </div>
+
+      <!-- Expense List -->
+      <div class="mt-6">
+        <h2 class="text-lg font-semibold mb-2">Expenses</h2>
+        <ul id="expense-list" class="space-y-2 text-sm text-gray-700"></ul>
+      </div>
+
+      <!-- Total -->
+      <div class="mt-4 border-t pt-3 text-right">
+        <span class="text-gray-500 text-sm">Total:</span>
+        <span id="total" class="text-xl font-bold text-indigo-700">$0.00</span>
+      </div>
+
+      <!-- Circle Chart -->
+      <div class="mt-8">
+        <h2 class="text-lg font-semibold mb-3 text-center">Spending Breakdown</h2>
+        <canvas id="expenseChart" width="400" height="400"></canvas>
+      </div>
     </div>
   </div>
 
   <script>
-    const itemInput = document.getElementById('item');
-    const amountInput = document.getElementById('amount');
-    const categoryInput = document.getElementById('category');
-    const addBtn = document.getElementById('add-btn');
-    const list = document.getElementById('expense-list');
-    const totalEl = document.getElementById('total');
-    const ctx = document.getElementById('expenseChart').getContext('2d');
+    // ── Login logic ──
+    function handleLogin() {
+      const email    = document.getElementById('loginEmail');
+      const password = document.getElementById('loginPassword');
+      const emailErr = document.getElementById('emailErr');
+      const passErr  = document.getElementById('passErr');
+      const btn      = document.getElementById('loginBtn');
 
-    let total = 0;
-    let expenses = [];
-    let categoryTotals = {};
+      emailErr.classList.add('hidden');
+      passErr.classList.add('hidden');
+      email.classList.remove('border-red-400');
+      password.classList.remove('border-red-400');
 
-    // Chart.js setup
-    let expenseChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Expenses by Category',
-          data: [],
-          backgroundColor: ['#4f46e5','#f59e0b','#10b981','#ef4444','#6366f1','#a855f7','#f97316'],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom' }
-        }
+      let valid = true;
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+        emailErr.classList.remove('hidden');
+        email.classList.add('border-red-400');
+        valid = false;
+      }
+
+      if (password.value.length < 8) {
+        passErr.classList.remove('hidden');
+        password.classList.add('border-red-400');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      setTimeout(() => {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('appScreen').classList.remove('hidden');
+        document.getElementById('userLabel').textContent = email.value.trim();
+        initChart();
+      }, 1000);
+    }
+
+    function handleLogout() {
+      document.getElementById('appScreen').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginBtn').disabled = false;
+      document.getElementById('loginBtn').textContent = 'Sign In';
+      document.getElementById('loginEmail').value = '';
+      document.getElementById('loginPassword').value = '';
+    }
+
+    // Allow Enter key on login form
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
+        handleLogin();
       }
     });
+
+    // ── Expense tracker logic ──
+    let total = 0;
+    let categoryTotals = {};
+    let expenseChart;
+
+    function initChart() {
+      if (expenseChart) return;
+      const ctx = document.getElementById('expenseChart').getContext('2d');
+      expenseChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Expenses by Category',
+            data: [],
+            backgroundColor: ['#4f46e5','#f59e0b','#10b981','#ef4444','#6366f1','#a855f7','#f97316'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
 
     function updateChart() {
       expenseChart.data.labels = Object.keys(categoryTotals);
@@ -85,36 +186,32 @@
       expenseChart.update();
     }
 
-    addBtn.addEventListener('click', () => {
-      const name = itemInput.value.trim();
-      const amount = parseFloat(amountInput.value);
-      const category = categoryInput.value;
+    document.getElementById('add-btn').addEventListener('click', () => {
+      const name     = document.getElementById('item').value.trim();
+      const amount   = parseFloat(document.getElementById('amount').value);
+      const category = document.getElementById('category').value;
 
       if (!name || isNaN(amount) || amount <= 0) {
-        alert('Please enter valid name and amount.');
+        alert('Please enter a valid name and amount.');
         return;
       }
 
-      // Add to list
       const li = document.createElement('li');
       li.className = 'flex justify-between bg-gray-100 px-3 py-2 rounded';
       li.innerHTML = `
         <span>${name} <span class="text-gray-400 text-xs">(${category})</span></span>
         <span class="font-semibold">$${amount.toFixed(2)}</span>
       `;
-      list.appendChild(li);
+      document.getElementById('expense-list').appendChild(li);
 
-      // Update totals
       total += amount;
-      totalEl.textContent = '$' + total.toFixed(2);
-
+      document.getElementById('total').textContent = '$' + total.toFixed(2);
       categoryTotals[category] = (categoryTotals[category] || 0) + amount;
       updateChart();
 
-      // Reset inputs
-      itemInput.value = '';
-      amountInput.value = '';
-      itemInput.focus();
+      document.getElementById('item').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('item').focus();
     });
   </script>
 </body>
